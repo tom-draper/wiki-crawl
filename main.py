@@ -39,7 +39,7 @@ def fetch_main_page_links() -> list[str]:
 
 
 def select_n_links(links: list[str], n: int) -> list[str]:
-    selected = np.random.choice(links, size=n)
+    selected = list(set(np.random.choice(links, size=n)))
     return selected
 
 
@@ -102,9 +102,10 @@ def build(width, depth) -> tuple[dict, list[str]]:
 
 
 class Game:
-    def __init__(self, width, depth):
+    def __init__(self, width, depth, hints_enabled=True):
         self.width = width
         self.depth = depth
+        self.hints_enabled = hints_enabled
         self.links, self.path = build(width, depth)
         self.chosen_path = list(self.links.keys())
         self.current_width = 0
@@ -123,15 +124,27 @@ class Game:
         if clear:
             self._clear(self.width)
 
+        print(len(self.path), self.path)
         if len(self.chosen_path) == len(self.path) - 1:
-            final_path = self.chosen_path + [self.path[-1]]
-            if final_path == self.path:
-                colour = Fore.GREEN
+            if self.hints_enabled:
+                # Show green topics up until first mistake
+                final_path = self.chosen_path + [self.path[-1]]
+                mistake = False
+                for i, topic in enumerate(final_path):
+                    if topic == self.path[i] and not mistake:
+                        final_path[i] = Fore.GREEN + topic
+                    else:
+                        final_path[i] = Fore.RED + topic
+                        mistake = True
+                string = '    '.join([topic for topic in final_path]) + Fore.WHITE + '\n' * (self.width)
             else:
-                colour = Fore.RED
-            string = colour + \
-                '    '.join([topic for topic in final_path]) + \
-                Fore.WHITE + '\n' * (self.width)
+                final_path = self.chosen_path + [self.path[-1]]
+                if final_path == self.path:
+                    colour = Fore.GREEN
+                else:
+                    colour = Fore.RED
+                string = colour + '    '.join([topic for topic in final_path]) + \
+                    Fore.WHITE + '\n' * (self.width)
         else:
             # Init rows
             rows = [['' for _ in range(self.depth+2)]
