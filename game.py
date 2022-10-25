@@ -1,17 +1,20 @@
 import sys
 from colorama import Fore
 import keyboard
-from crawl import build
+from crawl import Crawler
 
 
 class Game:
-    def __init__(self, width, depth, hints_enabled=True):
+    def __init__(self, width: int, depth: int, hints_enabled: bool = True):
         self.width = width
         self.depth = depth
         self.hints_enabled = hints_enabled
-        self.links, self.path = build(width, depth)
+        
+        self.crawler = Crawler()
+        self.links, self.path = self.crawler.build(width, depth)
+        
         self.chosen_path = list(self.links.keys())
-        self.current_width = 0
+        self.current_row = 0
 
     def _clear(self, n):
         for _ in range(n):
@@ -72,11 +75,11 @@ class Game:
 
         # Insert options available from current position
         col = len(self.chosen_path)
-        self.current_width = min(len(next_topics)-1, self.current_width)
+        self.current_row = min(len(next_topics)-1, self.current_row)
         if len(next_topics) > 0:
             max_topic_len = len(max(next_topics, key=len))
         for row, topic in enumerate(next_topics):
-            if row == self.current_width:
+            if row == self.current_row:
                 colour = Fore.MAGENTA
             else:
                 colour = Fore.WHITE
@@ -101,9 +104,9 @@ class Game:
 
     def _update(self, e: keyboard.KeyboardEvent):
         if e.name == 'up':
-            self.current_width = max(0, self.current_width-1)
+            self.current_row = max(0, self.current_row-1)
         elif e.name == 'down':
-            self.current_width = min(self.width-1, self.current_width+1)
+            self.current_row = min(self.width-1, self.current_row+1)
         elif e.name == 'left':
             if len(self.chosen_path) > 1:
                 self.chosen_path.pop()
@@ -113,7 +116,7 @@ class Game:
                 cur = cur[val]
 
             for i, topic in enumerate(cur.keys()):
-                if i == self.current_width:
+                if i == self.current_row:
                     self.chosen_path.append(topic)
                     break
 
