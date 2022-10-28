@@ -72,11 +72,23 @@ class Crawler:
         selected = self.select_n(page_links, width)
         topic = np.random.choice(selected)
         path.append(topic)
-
-    def build(self, width: int, depth: int) -> tuple[dict, list[str]]:
+    
+    def _auto_select_starting_topic(self):
         links = self.fetch_main_page_links()
         starting_topic = np.random.choice(links)
         print(starting_topic)
+    
+    def _select_starting_topic(self):
+        links = self.fetch_main_page_links()
+        selected = np.random.choice(links, size=(5,))
+        for i, link in enumerate(selected):
+            print(f'{i+1}. {link}')
+        choice = int(input('Select starting link number: '))
+        starting_topic = selected[choice-1]
+        return starting_topic
+
+    def build(self, width: int, depth: int) -> tuple[dict, list[str]]:
+        starting_topic = self._select_starting_topic()
 
         links = {starting_topic: {}}
         path = [starting_topic]
