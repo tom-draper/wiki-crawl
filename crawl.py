@@ -27,6 +27,10 @@ class Crawler:
             except KeyError:
                 print('Error', url, response.json())
         return links
+    
+    @staticmethod
+    def _num_nodes(width: int, depth: int) -> int:
+        return int((width**(depth+1)-1) / (width - 1)) + 1
 
     def fetch_main_page_links(self) -> list[str]:
         url = "https://en.wikipedia.org/w/api.php?action=query&titles=Main_Page&prop=links&format=json&pllimit=max"
@@ -92,13 +96,13 @@ class Crawler:
 
         links = {starting_topic: {}}
         path = [starting_topic]
-        n_nodes = int((width**(depth+1)-1) / (width - 1)) + 1
 
-        if n_nodes > 800:
+        num_nodes = self._num_nodes(width, depth)
+        if num_nodes > 800:
             print('Number of links too high ({n_nodes})')
             return {}, []
 
-        with alive_bar(n_nodes) as bar:
+        with alive_bar(num_nodes) as bar:
             self._crawl(self._topic_url(starting_topic),
                         links[starting_topic], path, True, depth, width, bar)
             self._insert_final_topic(path, bar, width)

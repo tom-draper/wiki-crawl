@@ -5,13 +5,13 @@ from crawl import Crawler
 
 
 class Game:
-    def __init__(self, width: int, depth: int, hints_enabled: bool = True):
-        self.width = width
+    def __init__(self, breadth: int, depth: int, hints_enabled: bool = True):
+        self.breadth = breadth
         self.depth = depth
         self.hints_enabled = hints_enabled
         
         self.crawler = Crawler()
-        self.links, self.path = self.crawler.build(width, depth)
+        self.links, self.path = self.crawler.build(breadth, depth)
         
         self.chosen_path = list(self.links.keys())
         self.current_row = 0
@@ -38,7 +38,7 @@ class Game:
                     final_path[i] = Fore.RED + topic
                     mistake = True
             string = '    '.join(
-                [topic for topic in final_path]) + Fore.WHITE + '\n' * (self.width)
+                [topic for topic in final_path]) + Fore.WHITE + '\n' * (self.breadth)
         else:
             final_path = self.chosen_path + [self.path[-1]]
             if final_path == self.path:
@@ -46,7 +46,7 @@ class Game:
             else:
                 colour = Fore.RED
             string = colour + '    '.join([topic for topic in final_path]) + \
-                Fore.WHITE + '\n' * (self.width)
+                Fore.WHITE + '\n' * (self.breadth)
         return string
 
     @staticmethod
@@ -59,12 +59,12 @@ class Game:
     def _inprogress_link(self) -> str:
         # Init rows
         rows = [['' for _ in range(self.depth+2)]
-                for _ in range(self.width)]
+                for _ in range(self.breadth)]
 
         # Insert path followed so far
         for col, topic in enumerate(self.chosen_path):
             rows[0][col] = Fore.CYAN + topic + Fore.WHITE
-            for i in range(1, self.width):
+            for i in range(1, self.breadth):
                 rows[i][col] = ' '*len(topic)
 
         # Travel to current topic in links tree to access next topics available
@@ -94,7 +94,7 @@ class Game:
 
     def view(self, clear=True):
         if clear:
-            self._clear(self.width)
+            self._clear(self.breadth)
 
         if len(self.chosen_path) == len(self.path) - 1:
             string = self._finished_link()
@@ -106,7 +106,7 @@ class Game:
         if e.name == 'up':
             self.current_row = max(0, self.current_row-1)
         elif e.name == 'down':
-            self.current_row = min(self.width-1, self.current_row+1)
+            self.current_row = min(self.breadth-1, self.current_row+1)
         elif e.name == 'left':
             if len(self.chosen_path) > 1:
                 self.chosen_path.pop()
