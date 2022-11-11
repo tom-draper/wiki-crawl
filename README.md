@@ -5,7 +5,7 @@ A game of path finding through Wikipedia topics.
 
 
 <p align="center">
-	<img src="https://user-images.githubusercontent.com/41476809/201162222-8bbedfb3-d87d-411d-b37a-97c655fd29e2.png">
+	<img src="https://user-images.githubusercontent.com/41476809/201361554-ca59c552-5bec-4e2f-8c39-17f678647a5a.png">
 </p>
 
 ## Getting Started
